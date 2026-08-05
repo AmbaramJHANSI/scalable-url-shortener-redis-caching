@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+
 
 @Controller
 public class HomeController {
@@ -36,49 +36,6 @@ public class HomeController {
         return "index";
     }
     
-    @GetMapping("/dashboard")
-    public String dashboard(
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String sort,
-            Model model) {
-
-        List<ShortUrl> urls;
-
-        if (search != null && !search.isBlank()) {
-
-            urls = urlShortenerService.searchByShortCode(search);
-
-            if (urls.isEmpty()) {
-                urls = urlShortenerService.searchByOriginalUrl(search);
-            }
-
-        } else if ("clicks".equals(sort)) {
-
-            urls = urlShortenerService.sortByClicksDesc();
-
-        } else if ("least".equals(sort)) {
-
-            urls = urlShortenerService.sortByClicksAsc();
-
-        } else {
-
-            urls = urlShortenerService.getAllUrls();
-        }
-
-        model.addAttribute("urls", urls);
-
-        model.addAttribute("totalUrls",
-                urlShortenerService.getTotalUrls());
-
-        model.addAttribute("totalClicks",
-                urlShortenerService.getTotalClicks());
-
-        model.addAttribute("topUrls",
-                urlShortenerService.getTopUrls());
-
-        return "dashboard";
-    }
-
     /**
      * Processes the form submission to create a shortened URL.
      *

@@ -229,6 +229,27 @@ public class UrlShortenerService {
         return shortUrlRepository.findTop5ByOrderByClickCountDesc();
     }
 
+    /**
+     * Returns the number of active URLs.
+     * Active = No expiration OR expiration time is in the future.
+     */
+    @Transactional(readOnly = true)
+    public long getActiveUrls() {
+        return shortUrlRepository.countActiveUrls(
+                java.time.LocalDateTime.now()
+        );
+    }
+
+    /**
+     * Returns the number of expired URLs.
+     */
+    @Transactional(readOnly = true)
+    public long getExpiredUrls() {
+        return shortUrlRepository.countByExpiresAtBefore(
+                java.time.LocalDateTime.now()
+        );
+    }
+
     @Transactional(readOnly = true)
     public List<ShortUrl> searchByShortCode(String keyword) {
 

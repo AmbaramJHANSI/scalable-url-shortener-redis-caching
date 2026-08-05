@@ -1,19 +1,25 @@
 package com.urlshortener.url_shortener.dto;
 
+import com.urlshortener.url_shortener.entity.ShortUrl;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnalyticsResponse {
+    // Dashboard Statistics
+    private long totalUrls;
+    private long totalClicks;
+    private long activeUrls;
+    private long expiredUrls;
 
-    private String shortCode;
+    // Top 5 Most Visited URLs
+    private List<ShortUrl> topUrls;
 
-    private String originalUrl;
-
-    private Long clickCount;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime lastAccessed;
+    // Complete URL History
+    private List<ShortUrl> allUrls;
 }
