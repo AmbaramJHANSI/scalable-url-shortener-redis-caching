@@ -142,13 +142,7 @@ with your MySQL credentials.
 ./mvnw spring-boot:run
 ```
 
----
 
-## 🌐 Access Application
-
-```
-http://localhost:8081
-```
 
 ---
 
@@ -193,7 +187,7 @@ http://localhost:8081
 
 ## 👨‍💻 Author
 
-**Your Name**
+Ambaram Jhansi Lakshmi
 
 B.Tech CSE (Cyber Security)
 
