@@ -1,50 +1,42 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
 <head>
-    <title>Link Unavailable</title>
-    <style>
-        body{
-            font-family:Arial,sans-serif;
-            background:#f5f5f5;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b0d16">
+    <title>Link unavailable · Shortly</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script>
+        if (localStorage.getItem('shortly-theme') === 'light') {
+            document.documentElement.dataset.theme = 'light';
         }
-        .card{
-            background:white;
-            padding:40px;
-            border-radius:10px;
-            text-align:center;
-            width:420px;
-            box-shadow:0 5px 20px rgba(0,0,0,.15);
-        }
-        h1{
-            color:#d32f2f;
-        }
-        p{
-            margin:20px 0;
-            color:#555;
-        }
-        a{
-            text-decoration:none;
-            background:#667eea;
-            color:white;
-            padding:12px 20px;
-            border-radius:6px;
-        }
-        a:hover{
-            background:#4b63d1;
-        }
-    </style>
+    </script>
+    <script th:src="@{/js/app.js}" defer></script>
 </head>
-<body>
-<div class="card">
-    <h1>⚠ Link Unavailable</h1>
-    <p th:text="${message}">
-        This short URL has expired.
-    </p>
-    <a href="/">Create New Short URL</a>
-</div>
+<body class="standalone-page">
+<header class="standalone-topbar">
+    <a class="brand" th:href="@{/}" aria-label="Shortly home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.6 13.4a4.5 4.5 0 0 0 6.36 0l2.12-2.12a4.5 4.5 0 0 0-6.36-6.36L11.5 6.14M13.4 10.6a4.5 4.5 0 0 0-6.36 0l-2.12 2.12a4.5 4.5 0 0 0 6.36 6.36l1.22-1.22"/></svg></span>
+        <span class="brand-name">shortly<span>.</span></span>
+    </a>
+    <nav class="standalone-nav" aria-label="Main navigation">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <span aria-hidden="true">·</span>
+        <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+            <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+            <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.6 8.6 0 1 0 20.2 15.1Z"/></svg>
+        </button>
+    </nav>
+</header>
+<main class="standalone-main">
+    <section class="panel expired-card">
+        <span class="expired-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        <div class="eyebrow">LINK UNAVAILABLE</div>
+        <h1>This link can't be opened.</h1>
+        <p th:text="${message}">This short URL may have expired or could not be found.</p>
+        <a class="button button-primary" th:href="@{/}">Create a new short link</a>
+    </section>
+</main>
+<div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
 </body>
 </html>

@@ -1,287 +1,77 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL Shortener Service</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            padding: 40px;
-            max-width: 500px;
-            width: 100%;
-        }
-
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 2em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.95em;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            color: #555;
-            font-weight: 600;
-            margin-bottom: 8px;
-            font-size: 0.95em;
-        }
-
-        input[type="url"],
-        input[type="text"] {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s;
-        }
-
-        input[type="url"]:focus,
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .error-message {
-            color: #e74c3c;
-            font-size: 0.85em;
-            margin-top: 5px;
-            display: none;
-        }
-
-        input.is-invalid {
-            border-color: #e74c3c;
-        }
-
-        input.is-invalid ~ .error-message {
-            display: block;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .alert {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .result-section {
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 2px solid #f0f0f0;
-        }
-
-        .result-section h2 {
-            color: #333;
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .result-item {
-            margin-bottom: 15px;
-        }
-
-        .result-label {
-            color: #888;
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-
-        .result-value {
-            background: #f8f9fa;
-            padding: 12px 15px;
-            border-radius: 8px;
-            color: #333;
-            word-break: break-all;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Courier New', monospace;
-        }
-
-        .copy-button {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.85em;
-            margin-left: 10px;
-            flex-shrink: 0;
-        }
-
-        .copy-button:hover {
-            background: #764ba2;
-        }
-
-        .short-code {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #667eea;
-        }
-
-        .datetime {
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px 20px;
-            }
-
-            h1 {
-                font-size: 1.5em;
-            }
-
-            .result-value {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .copy-button {
-                margin-left: 0;
-                margin-top: 10px;
-                width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🔗 URL Shortener</h1>
-        <p class="subtitle">Shorten your long URLs instantly</p>
-
-        <!-- Error Message -->
-        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-        <!-- Main Form -->
-        <form th:action="@{/shorten}" method="POST" th:object="${shortUrlRequest}" id="shortenForm">
-            <div class="form-group">
-                <label for="url">Enter Your Long URL</label>
-                <input 
-                    type="url" 
-                    id="url" 
-                    name="url"
-                    th:field="*{url}"
-                    placeholder="https://example.com/very/long/url"
-                    required>
-                <div class="error-message" th:if="${#fields.hasErrors('url')}" th:errors="*{url}"></div>
-            </div>
-            <div class="form-group">
-                <label for="customAlias">Custom Alias (Optional)</label>
-                <input
-                    type="text"
-                    id="customAlias"
-                    name="customAlias"
-                    th:field="*{customAlias}"
-                    placeholder="Example: github">
-                <small style="color: gray;">
-                    Leave empty to generate a random short code.
-                </small>
-            </div>
-            <div class="form-group">
-                <label for="expiryHours">Expiry (Hours)</label>
-                <input
-                    type="number"
-                    id="expiryHours"
-                    name="expiryHours"
-                    th:field="*{expiryHours}"
-                    min="1"
-                    placeholder="Example: 24">
-                <small style="color:gray;">
-                    Leave empty for a permanent URL.
-                </small>
-            </div>
-            <button type="submit">Shorten URL</button>
-        </form>
-
-        <!-- Result Section (from POST redirect, shown in result.html typically) -->
-        <!-- This section can be populated if result is passed here -->
-    </div>
-
+    <meta name="theme-color" content="#0b0d16">
+    <title>Create a short URL · Shortly</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
     <script>
-        // Form validation and feedback
-        document.getElementById("shortenForm").addEventListener("submit", function () {
-            console.log("Form Submitted...");
-        });
-
-        // Copy to clipboard function
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                alert('Copied to clipboard!');
-            }).catch(function(err) {
-                console.error('Failed to copy:', err);
-            });
+        if (localStorage.getItem('shortly-theme') === 'light') {
+            document.documentElement.dataset.theme = 'light';
         }
     </script>
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body class="standalone-page">
+<header class="standalone-topbar">
+    <a class="brand" th:href="@{/}" aria-label="Shortly home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10.6 13.4a4.5 4.5 0 0 0 6.36 0l2.12-2.12a4.5 4.5 0 0 0-6.36-6.36L11.5 6.14M13.4 10.6a4.5 4.5 0 0 0-6.36 0l-2.12 2.12a4.5 4.5 0 0 0 6.36 6.36l1.22-1.22"/></svg></span>
+        <span class="brand-name">shortly<span>.</span></span>
+    </a>
+    <nav class="standalone-nav" aria-label="Main navigation">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <span aria-hidden="true">·</span>
+        <button class="icon-button theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+            <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+            <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.6 8.6 0 1 0 20.2 15.1Z"/></svg>
+        </button>
+    </nav>
+</header>
+
+<main class="standalone-main">
+    <div class="standalone-heading">
+        <div class="eyebrow"><span class="eyebrow-line"></span> FAST, SIMPLE, SHAREABLE</div>
+        <h1>Make a long link <span class="heading-accent">go further.</span></h1>
+        <p>Create a compact link and get back to what matters.</p>
+    </div>
+
+    <section class="panel standalone-card" aria-label="Create a short URL">
+        <div class="inline-alert" th:if="${error}" role="alert">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5m0 3h.01"/></svg>
+            <span th:text="${error}">We couldn't create your short link.</span>
+        </div>
+        <form th:action="@{/shorten}" method="post" th:object="${shortUrlRequest}" id="shortenForm" class="standalone-form">
+            <div class="form-field">
+                <label for="url">Destination URL</label>
+                <div class="input-with-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 13.4a4.5 4.5 0 0 0 6.36 0l2.12-2.12a4.5 4.5 0 0 0-6.36-6.36L11.5 6.14M13.4 10.6a4.5 4.5 0 0 0-6.36 0l-2.12 2.12a4.5 4.5 0 0 0 6.36 6.36l1.22-1.22"/></svg>
+                    <input type="url" id="url" th:field="*{url}" placeholder="https://your-domain.com/a/very/long/path" required autofocus>
+                </div>
+                <small class="field-error" th:if="${#fields.hasErrors('url')}" th:errors="*{url}"></small>
+            </div>
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="customAlias">Custom alias <span class="optional-label">OPTIONAL</span></label>
+                    <div class="input-with-prefix"><span class="input-prefix">/</span><input type="text" id="customAlias" th:field="*{customAlias}" placeholder="my-custom-link" autocomplete="off"></div>
+                    <small>Letters, numbers, hyphens, and underscores.</small>
+                    <small class="field-error" th:if="${#fields.hasErrors('customAlias')}" th:errors="*{customAlias}"></small>
+                </div>
+                <div class="form-field">
+                    <label for="expiryHours">Link expiration <span class="optional-label">OPTIONAL</span></label>
+                    <div class="input-with-suffix"><input type="number" id="expiryHours" th:field="*{expiryHours}" min="1" placeholder="No expiration"><span class="input-suffix">hours</span></div>
+                    <small>Leave blank to keep your link active.</small>
+                    <small class="field-error" th:if="${#fields.hasErrors('expiryHours')}" th:errors="*{expiryHours}"></small>
+                </div>
+            </div>
+            <button class="button button-primary standalone-submit" type="submit" data-submit-button>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 13.4a4.5 4.5 0 0 0 6.36 0l2.12-2.12a4.5 4.5 0 0 0-6.36-6.36L11.5 6.14M13.4 10.6a4.5 4.5 0 0 0-6.36 0l-2.12 2.12a4.5 4.5 0 0 0 6.36 6.36l1.22-1.22"/></svg>
+                <span>Generate short URL</span>
+            </button>
+        </form>
+    </section>
+    <p class="standalone-footer">Need an overview? <a th:href="@{/dashboard}">Explore your dashboard</a></p>
+</main>
+<div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
 </body>
 </html>
